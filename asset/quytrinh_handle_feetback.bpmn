@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1d4pkzs" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.20.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:collaboration id="CustomerService">
+    <bpmn:participant id="MCDonalds" name="MC Donald&#39;s" processRef="HandleFeedback" />
+    <bpmn:participant id="customer" name="Customer" />
+    <bpmn:messageFlow id="Flow_1nwarje" name="Email" sourceRef="SendEmail" targetRef="customer" />
+    <bpmn:messageFlow id="Flow_19y6tqj" name="Customer Response" sourceRef="customer" targetRef="Activity_0rdjvqy" />
+    <bpmn:messageFlow id="Flow_083ni2o" sourceRef="customer" targetRef="StartEvent_1" />
+    <bpmn:textAnnotation id="TextAnnotation_1bt2njr">
+      <bpmn:text>Post Highlighted Feedback or Questions on Customer Service Section</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_15zthxy" associationDirection="None" sourceRef="PostContentOnWebsite" targetRef="TextAnnotation_1bt2njr" />
+  </bpmn:collaboration>
+  <bpmn:process id="HandleFeedback" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:startEvent id="StartEvent_1" name="Feedback received" camunda:formRef="FeedbackForm" camunda:formRefBinding="deployment">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_1rmptbz</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0xbq0bv">
+        <bpmn:targetRef>FeedbackForm</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_0ottnax" name="Classify Feedback" camunda:type="external" camunda:topic="classify-feedback">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="sentiment">${sentiment}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1rmptbz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0rfrgtc</bpmn:outgoing>
+      <bpmn:property id="Property_0a08gsc" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_0l4gd5j">
+        <bpmn:sourceRef>FeedbackForm</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0a08gsc</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1xch9l0">
+        <bpmn:targetRef>DataObjectReference_07s7ait</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0vfr6x6">
+        <bpmn:targetRef>DataObjectReference_0666kni</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_0yd304h">
+      <bpmn:incoming>Flow_0rfrgtc</bpmn:incoming>
+      <bpmn:outgoing>PositiveGateway</bpmn:outgoing>
+      <bpmn:outgoing>NegativeGateway</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1rmptbz" sourceRef="StartEvent_1" targetRef="Activity_0ottnax" />
+    <bpmn:sequenceFlow id="Flow_0rfrgtc" sourceRef="Activity_0ottnax" targetRef="Gateway_0yd304h" />
+    <bpmn:sequenceFlow id="PositiveGateway" name="positive" sourceRef="Gateway_0yd304h" targetRef="PostContentOnWebsite">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${sentiment=='POSITIVE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="NegativeGateway" name="negative" sourceRef="Gateway_0yd304h" targetRef="GiveSolution">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${sentiment=='NEGATIVE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="approval_no" name="no" sourceRef="GatewayApproval" targetRef="GiveSolution">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${CheckApproval == 'disagree'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_031yuj6" sourceRef="GiveSolution" targetRef="GiveOfficialSolution" />
+    <bpmn:sequenceFlow id="Flow_0niqfa6" sourceRef="Gateway_1n8trf4" targetRef="Activity_040wdi6" />
+    <bpmn:sequenceFlow id="approval_yes" name="yes" sourceRef="GatewayApproval" targetRef="Gateway_1n8trf4">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${CheckApproval == 'agree'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0ic2sil" sourceRef="Activity_0rdjvqy" targetRef="GatewayApproval" />
+    <bpmn:sequenceFlow id="Flow_09atf2t" sourceRef="SendEmail" targetRef="Activity_0rdjvqy" />
+    <bpmn:sequenceFlow id="Flow_0ta0dx1" sourceRef="GiveOfficialSolution" targetRef="SendEmail" />
+    <bpmn:sequenceFlow id="Flow_064nonp" sourceRef="PostContentOnWebsite" targetRef="Gateway_1n8trf4" />
+    <bpmn:exclusiveGateway id="Gateway_1n8trf4">
+      <bpmn:incoming>approval_yes</bpmn:incoming>
+      <bpmn:incoming>Flow_064nonp</bpmn:incoming>
+      <bpmn:outgoing>Flow_0niqfa6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="PostContentOnWebsite" name="Share Some Feedback on Website" camunda:formRef="PostContent" camunda:formRefBinding="deployment">
+      <bpmn:incoming>PositiveGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_064nonp</bpmn:outgoing>
+      <bpmn:property id="Property_0ws6dqz" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_0wifri0">
+        <bpmn:sourceRef>DataObjectReference_07s7ait</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0ws6dqz</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:userTask>
+    <bpmn:dataObjectReference id="DataObjectReference_07s7ait" name="feedback&#10;[classified]" dataObjectRef="DataObject_1nkoxps" />
+    <bpmn:dataObject id="DataObject_1nkoxps" />
+    <bpmn:serviceTask id="GiveSolution" name="Remedy  Solution" camunda:type="external" camunda:topic="RemedySolution">
+      <bpmn:incoming>NegativeGateway</bpmn:incoming>
+      <bpmn:incoming>approval_no</bpmn:incoming>
+      <bpmn:outgoing>Flow_031yuj6</bpmn:outgoing>
+      <bpmn:property id="Property_06vq72w" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1ax6be7">
+        <bpmn:sourceRef>DataObjectReference_0666kni</bpmn:sourceRef>
+        <bpmn:targetRef>Property_06vq72w</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="GiveOfficialSolution" name="Give Official Solution" camunda:formRef="ChooseSolution" camunda:formRefBinding="deployment">
+      <bpmn:incoming>Flow_031yuj6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ta0dx1</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_0a366qy">
+        <bpmn:targetRef>ChooseSolution</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="SendEmail" name="Send Email" camunda:type="external" camunda:topic="SendEmail">
+      <bpmn:incoming>Flow_0ta0dx1</bpmn:incoming>
+      <bpmn:outgoing>Flow_09atf2t</bpmn:outgoing>
+      <bpmn:property id="Property_0k3bqs7" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_196yk9q">
+        <bpmn:sourceRef>ChooseSolution</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0k3bqs7</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_0rdjvqy" name="Check Response" camunda:formRef="CheckResponse" camunda:formRefBinding="deployment">
+      <bpmn:incoming>Flow_09atf2t</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ic2sil</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="GatewayApproval" name="is approval ?">
+      <bpmn:incoming>Flow_0ic2sil</bpmn:incoming>
+      <bpmn:outgoing>approval_yes</bpmn:outgoing>
+      <bpmn:outgoing>approval_no</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:dataObjectReference id="DataObjectReference_0666kni" name="feedback&#10;[classified]" dataObjectRef="DataObject_0cxujs7" />
+    <bpmn:dataObject id="DataObject_0cxujs7" />
+    <bpmn:sequenceFlow id="Flow_1q03r8c" sourceRef="Activity_040wdi6" targetRef="Activity_0iwiszw" />
+    <bpmn:endEvent id="Event_0qtuyex" name="Feedback handled">
+      <bpmn:incoming>Flow_1sweswo</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_040wdi6" name="Create Reporting">
+      <bpmn:incoming>Flow_0niqfa6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1q03r8c</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1sweswo" sourceRef="Activity_0iwiszw" targetRef="Event_0qtuyex" />
+    <bpmn:userTask id="Activity_0iwiszw" name="Report to Headquarter and CEO">
+      <bpmn:incoming>Flow_1q03r8c</bpmn:incoming>
+      <bpmn:outgoing>Flow_1sweswo</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:dataObjectReference id="ChooseSolution" name="Form content email" dataObjectRef="DataObject_1984z8s" />
+    <bpmn:dataObject id="DataObject_1984z8s" />
+    <bpmn:dataObjectReference id="FeedbackForm" name="FeedBack" dataObjectRef="DataObject_05qy5uk" />
+    <bpmn:dataObject id="DataObject_05qy5uk" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CustomerService">
+      <bpmndi:BPMNShape id="Participant_13w1dxa_di" bpmnElement="MCDonalds" isHorizontal="true">
+        <dc:Bounds x="150" y="80" width="1740" height="570" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0ntclkx" bpmnElement="StartEvent_1">
+        <dc:Bounds x="202" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="195" y="276" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0mev7ww_di" bpmnElement="Activity_0ottnax">
+        <dc:Bounds x="320" y="290" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0yd304h_di" bpmnElement="Gateway_0yd304h" isMarkerVisible="true">
+        <dc:Bounds x="475" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1n8trf4_di" bpmnElement="Gateway_1n8trf4" isMarkerVisible="true">
+        <dc:Bounds x="1315" y="305" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12xcfdz_di" bpmnElement="PostContentOnWebsite">
+        <dc:Bounds x="860" y="210" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_07s7ait_di" bpmnElement="DataObjectReference_07s7ait">
+        <dc:Bounds x="622" y="145" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="615" y="202" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1d75dxt_di" bpmnElement="GiveSolution">
+        <dc:Bounds x="580" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vyhh01_di" bpmnElement="GiveOfficialSolution">
+        <dc:Bounds x="740" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cev9lf_di" bpmnElement="SendEmail">
+        <dc:Bounds x="910" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1vem1we_di" bpmnElement="Activity_0rdjvqy">
+        <dc:Bounds x="1080" y="380" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1tsmcd8_di" bpmnElement="GatewayApproval" isMarkerVisible="true">
+        <dc:Bounds x="1235" y="395" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1230.5" y="369" width="63" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0666kni_di" bpmnElement="DataObjectReference_0666kni">
+        <dc:Bounds x="462" y="465" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="522" width="52" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0qtuyex_di" bpmnElement="Event_0qtuyex">
+        <dc:Bounds x="1802" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1795" y="355" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fs6xam_di" bpmnElement="Activity_040wdi6">
+        <dc:Bounds x="1450" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1c7l9gl_di" bpmnElement="Activity_0iwiszw">
+        <dc:Bounds x="1620" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0pfwiez_di" bpmnElement="ChooseSolution">
+        <dc:Bounds x="812" y="505" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="798" y="562" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_182z3h9_di" bpmnElement="FeedbackForm">
+        <dc:Bounds x="262" y="425" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="255" y="482" width="51" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1rmptbz_di" bpmnElement="Flow_1rmptbz">
+        <di:waypoint x="238" y="330" />
+        <di:waypoint x="320" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rfrgtc_di" bpmnElement="Flow_0rfrgtc">
+        <di:waypoint x="420" y="330" />
+        <di:waypoint x="475" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0op49yo_di" bpmnElement="PositiveGateway">
+        <di:waypoint x="500" y="305" />
+        <di:waypoint x="500" y="250" />
+        <di:waypoint x="860" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="525" y="233" width="38" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yoq6ug_di" bpmnElement="NegativeGateway">
+        <di:waypoint x="500" y="355" />
+        <di:waypoint x="500" y="420" />
+        <di:waypoint x="580" y="420" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="506" y="403" width="42" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0n7ljec_di" bpmnElement="approval_no">
+        <di:waypoint x="1260" y="445" />
+        <di:waypoint x="1260" y="600" />
+        <di:waypoint x="620" y="600" />
+        <di:waypoint x="620" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1263" y="511" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_031yuj6_di" bpmnElement="Flow_031yuj6">
+        <di:waypoint x="680" y="420" />
+        <di:waypoint x="740" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0niqfa6_di" bpmnElement="Flow_0niqfa6">
+        <di:waypoint x="1365" y="330" />
+        <di:waypoint x="1450" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1cu5pre_di" bpmnElement="approval_yes">
+        <di:waypoint x="1285" y="420" />
+        <di:waypoint x="1340" y="420" />
+        <di:waypoint x="1340" y="355" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1351" y="379" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ic2sil_di" bpmnElement="Flow_0ic2sil">
+        <di:waypoint x="1180" y="420" />
+        <di:waypoint x="1235" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09atf2t_di" bpmnElement="Flow_09atf2t">
+        <di:waypoint x="1010" y="420" />
+        <di:waypoint x="1080" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ta0dx1_di" bpmnElement="Flow_0ta0dx1">
+        <di:waypoint x="840" y="420" />
+        <di:waypoint x="910" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_064nonp_di" bpmnElement="Flow_064nonp">
+        <di:waypoint x="960" y="250" />
+        <di:waypoint x="1340" y="250" />
+        <di:waypoint x="1340" y="305" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1q03r8c_di" bpmnElement="Flow_1q03r8c">
+        <di:waypoint x="1550" y="330" />
+        <di:waypoint x="1620" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sweswo_di" bpmnElement="Flow_1sweswo">
+        <di:waypoint x="1720" y="330" />
+        <di:waypoint x="1802" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Participant_1rogegs_di" bpmnElement="customer" isHorizontal="true">
+        <dc:Bounds x="150" y="710" width="1740" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_15zthxy_di" bpmnElement="Association_15zthxy">
+        <di:waypoint x="946" y="210" />
+        <di:waypoint x="999" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19y6tqj_di" bpmnElement="Flow_19y6tqj">
+        <di:waypoint x="1130" y="710" />
+        <di:waypoint x="1130" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1145" y="676" width="50" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nwarje_di" bpmnElement="Flow_1nwarje">
+        <di:waypoint x="940" y="460" />
+        <di:waypoint x="940" y="710" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="956" y="683" width="28" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_083ni2o_di" bpmnElement="Flow_083ni2o">
+        <di:waypoint x="220" y="710" />
+        <di:waypoint x="220" y="348" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1bt2njr_di" bpmnElement="TextAnnotation_1bt2njr">
+        <dc:Bounds x="980" y="100" width="250" height="49.99999911389146" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0wifri0_di" bpmnElement="DataInputAssociation_0wifri0">
+        <di:waypoint x="658" y="170" />
+        <di:waypoint x="910" y="170" />
+        <di:waypoint x="910" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1xch9l0_di" bpmnElement="DataOutputAssociation_1xch9l0">
+        <di:waypoint x="370" y="290" />
+        <di:waypoint x="370" y="170" />
+        <di:waypoint x="622" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0vfr6x6_di" bpmnElement="DataOutputAssociation_0vfr6x6">
+        <di:waypoint x="370" y="370" />
+        <di:waypoint x="370" y="490" />
+        <di:waypoint x="462" y="490" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1ax6be7_di" bpmnElement="DataInputAssociation_1ax6be7">
+        <di:waypoint x="498" y="483" />
+        <di:waypoint x="581" y="453" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0a366qy_di" bpmnElement="DataOutputAssociation_0a366qy">
+        <di:waypoint x="803" y="460" />
+        <di:waypoint x="818" y="505" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_196yk9q_di" bpmnElement="DataInputAssociation_196yk9q">
+        <di:waypoint x="848" y="512" />
+        <di:waypoint x="910" y="450" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_0xbq0bv_di" bpmnElement="DataOutputAssociation_0xbq0bv">
+        <di:waypoint x="228" y="346" />
+        <di:waypoint x="271" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataInputAssociation_0l4gd5j_di" bpmnElement="DataInputAssociation_0l4gd5j">
+        <di:waypoint x="297" y="425" />
+        <di:waypoint x="333" y="370" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

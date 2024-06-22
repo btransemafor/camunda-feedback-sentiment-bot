@@ -1,0 +1,77 @@
+{
+  "components": [
+    {
+      "text": "# YOUR FEEDBACK ",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0ty68aj",
+        "columns": null
+      },
+      "id": "Field_034h6qw"
+    },
+    {
+      "label": "Your Name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1jqy8va",
+        "columns": null
+      },
+      "id": "Field_1oj10kw",
+      "key": "NameCustomer",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "Tran Vo "
+    },
+    {
+      "label": "Your Email",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1raobpi",
+        "columns": null
+      },
+      "id": "Field_03pwe95",
+      "key": "EmailSender",
+      "validate": {
+        "required": true
+      },
+      "defaultValue": "vongocbaotran754@gmail.com"
+    },
+    {
+      "label": "Your Phone ",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0rciesh",
+        "columns": null
+      },
+      "id": "Field_1l374ia",
+      "key": "PhoneCustomer",
+      "validate": {
+        "maxLength": 10,
+        "required": true
+      },
+      "defaultValue": "0338498306"
+    },
+    {
+      "label": "Your Feedback",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1asctmt",
+        "columns": null
+      },
+      "id": "Field_081m0kj",
+      "key": "CustomerFeedback",
+      "description": "Please specify the date of order for products or services if you complain"
+    }
+  ],
+  "type": "default",
+  "id": "FeedbackForm",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.20.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.20.0",
+  "schemaVersion": 15
+}

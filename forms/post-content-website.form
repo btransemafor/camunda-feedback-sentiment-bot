@@ -1,0 +1,73 @@
+{
+  "components": [
+    {
+      "text": "# Post Question or Feedback on Customer Service ",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1iurwd3",
+        "columns": null
+      },
+      "id": "Field_0d0hqix"
+    },
+    {
+      "text": "<h2> I. Title</h2>\n",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0cyzryx",
+        "columns": null
+      },
+      "id": "Field_0r2omld"
+    },
+    {
+      "label": "Title ",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1e99i9t",
+        "columns": null
+      },
+      "id": "Field_07g0uiu",
+      "key": "TitlePost"
+    },
+    {
+      "text": "<h2>II. Content </h2>",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_1mz0afe",
+        "columns": null
+      },
+      "id": "Field_15jrwmc"
+    },
+    {
+      "label": "Content",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0h3c1cw",
+        "columns": null
+      },
+      "id": "Field_0prxdku",
+      "key": "ContentPost"
+    },
+    {
+      "action": "submit",
+      "label": "Button",
+      "type": "button",
+      "layout": {
+        "row": "Row_0bsjmtg",
+        "columns": null
+      },
+      "id": "Field_0m3hbci"
+    }
+  ],
+  "type": "default",
+  "id": "PostContent",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.20.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.20.0",
+  "schemaVersion": 15
+}

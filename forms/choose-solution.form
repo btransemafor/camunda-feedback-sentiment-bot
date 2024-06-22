@@ -1,0 +1,41 @@
+{
+  "components": [
+    {
+      "text": "# Choose Official Solution  ",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_0gi3be5",
+        "columns": null
+      },
+      "id": "Field_1jsol9n"
+    },
+    {
+      "label": "Content Solution",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0tbs4p8",
+        "columns": null
+      },
+      "id": "Field_1q8fznr",
+      "key": "solution",
+      "description": "Read some solutions for AI recommended and combine thinking to close the most positive solutions",
+      "disabled": false,
+      "validate": {
+        "required": true
+      },
+      "properties": {
+        "solution": "${}"
+      }
+    }
+  ],
+  "type": "default",
+  "id": "ChooseSolution",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.20.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.20.0",
+  "schemaVersion": 15
+}

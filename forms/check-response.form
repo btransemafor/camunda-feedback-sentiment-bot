@@ -1,0 +1,43 @@
+{
+  "components": [
+    {
+      "text": "# Check Customer's Response ?",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_19dpif9",
+        "columns": null
+      },
+      "id": "Field_18cxz8b"
+    },
+    {
+      "values": [
+        {
+          "label": "Customer Agree Solution",
+          "value": "agree"
+        },
+        {
+          "label": "Customer Disagree Solution",
+          "value": "disagree"
+        }
+      ],
+      "label": "",
+      "type": "radio",
+      "layout": {
+        "row": "Row_16lsz0m",
+        "columns": null
+      },
+      "id": "Field_1f6vojw",
+      "key": "CheckApproval"
+    }
+  ],
+  "type": "default",
+  "id": "CheckResponse",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.20.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.20.0",
+  "schemaVersion": 15
+}
